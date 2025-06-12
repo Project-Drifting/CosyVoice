@@ -5,6 +5,8 @@ conda activate cosyvoice && python  cli.py --model-type cosyvoice2 --model-dir p
 可是，猫听到了主人的抱怨，忽然站起来说：“别担心。”"  --prompt-audio "/Users/Cyberbolt/Downloads/标准录音 1_3.mp3" --output my_zero_shot.wav
 ```
 
+`--output my_zero_shot.wav` 可以改为 `--base64`
+
 
 [![SVG Banners](https://svg-banners.vercel.app/api?type=origin&text1=CosyVoice🤠&text2=Text-to-Speech%20💖%20Large%20Language%20Model&width=800&height=210)](https://github.com/Akshay090/svg-banners)
 

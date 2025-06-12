@@ -10,6 +10,8 @@ import torch
 import torchaudio
 from cosyvoice.cli.cosyvoice import CosyVoice, CosyVoice2
 from cosyvoice.utils.file_utils import load_wav
+import io
+import base64
 
 app = typer.Typer(help="CosyVoice 命令行工具，支持多种推理模式和模型类型。")
 
@@ -50,7 +52,8 @@ def main(
     load_vllm: bool = typer.Option(False, "--load-vllm", help="加载 vllm (仅 CosyVoice2)"),
     fp16: bool = typer.Option(False, "--fp16", help="使用 FP16"),
     trt_concurrent: int = typer.Option(1, "--trt-concurrent", help="TensorRT 并发数"),
-    no_text_frontend: bool = typer.Option(False, "--no-text-frontend", help="不进行文本前处理")
+    no_text_frontend: bool = typer.Option(False, "--no-text-frontend", help="不进行文本前处理"),
+    print_base64: bool = typer.Option(False, "--base64", help="直接输出 base64 编码的音频内容到终端，而不保存文件")
 ):
     """执行 CosyVoice 合成并保存到输出文件"""
     # 确保项目根目录在 sys.path 中
@@ -114,8 +117,15 @@ def main(
 
     if segments:
         combined = torch.cat(segments, dim=1)
-        torchaudio.save(str(output), combined, cosy.sample_rate)
-        typer.secho(f"已保存输出: {output}", fg=typer.colors.GREEN)
+        if print_base64:
+            buf = io.BytesIO()
+            torchaudio.save(buf, combined, cosy.sample_rate, format="wav")
+            buf.seek(0)
+            b64 = base64.b64encode(buf.read()).decode('ascii')
+            typer.echo(b64)
+        else:
+            torchaudio.save(str(output), combined, cosy.sample_rate)
+            typer.secho(f"已保存输出: {output}", fg=typer.colors.GREEN)
     else:
         typer.secho("未生成任何音频片段。", fg=typer.colors.YELLOW)
 
