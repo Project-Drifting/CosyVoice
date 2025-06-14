@@ -11,11 +11,11 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Setup Miniconda
+      - name: Setup Miniforge
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-activate-base: false
-          python-version: 3.10
+          miniforge-version: "latest"
       - name: Create and activate conda env
         run: |
           conda create -n cosyvoice -y python=3.10
@@ -45,11 +45,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Setup Miniconda
+      - name: Setup Miniforge
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-activate-base: false
-          python-version: 3.10
+          miniforge-version: "latest"
       - name: Create and activate conda env
         run: |
           conda create -n cosyvoice -y python=3.10
@@ -87,7 +87,7 @@ jobs:
         run: |
           docker run --rm --platform linux/arm64 \
             -v "${{ github.workspace }}:/src" -w /src \
-            continuumio/miniconda3 bash -lc "
+            condaforge/miniforge3 bash -lc "
             set -e
             . /opt/conda/etc/profile.d/conda.sh
             conda create -n cosyvoice -y python=3.10
