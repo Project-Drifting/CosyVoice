@@ -35,7 +35,7 @@ jobs:
             --add-data third_party/Matcha-TTS:third_party/Matcha-TTS \
             cli.py
       - name: Upload macOS artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cosyvoice-cli-macos-arm64
           path: dist/cosyvoice-cli
@@ -69,7 +69,7 @@ jobs:
             --add-data third_party/Matcha-TTS:third_party/Matcha-TTS \
             cli.py
       - name: Upload Linux x86_64 artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cosyvoice-cli-linux-x64
           path: dist/cosyvoice-cli
@@ -103,7 +103,7 @@ jobs:
               cli.py
           "
       - name: Upload Linux ARM64 artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cosyvoice-cli-linux-arm64
           path: dist/cosyvoice-cli
