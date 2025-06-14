@@ -24,7 +24,12 @@ jobs:
       - name: Install dependencies
         run: |
           conda install -y -c conda-forge pynini==2.1.5
-          pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/ --trusted-host=mirrors.aliyun.com
+          pip install --upgrade pip
+          pip install -r requirements.txt \
+            --index-url https://mirrors.aliyun.com/pypi/simple/ \
+            --extra-index-url https://download.pytorch.org/whl/cu121 \
+            --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/ \
+            --trusted-host mirrors.aliyun.com
           pip install pyinstaller
       - name: Package CLI
         run: |
@@ -58,7 +63,12 @@ jobs:
       - name: Install dependencies
         run: |
           conda install -y -c conda-forge pynini==2.1.5
-          pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/ --trusted-host=mirrors.aliyun.com
+          pip install --upgrade pip
+          pip install -r requirements.txt \
+            --index-url https://mirrors.aliyun.com/pypi/simple/ \
+            --extra-index-url https://download.pytorch.org/whl/cu121 \
+            --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/ \
+            --trusted-host mirrors.aliyun.com
           pip install pyinstaller
       - name: Package CLI
         run: |
@@ -93,7 +103,12 @@ jobs:
             conda create -n cosyvoice -y python=3.10
             conda activate cosyvoice
             conda install -y -c conda-forge pynini==2.1.5
-            pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/ --trusted-host=mirrors.aliyun.com
+            pip install --upgrade pip
+            pip install -r requirements.txt \
+              --index-url https://mirrors.aliyun.com/pypi/simple/ \
+              --extra-index-url https://download.pytorch.org/whl/cu121 \
+              --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/ \
+              --trusted-host mirrors.aliyun.com
             pip install pyinstaller
             pyinstaller --onefile --name cosyvoice-cli \\
               --hidden-import torch \\
