@@ -1,3 +1,13 @@
+## CLI
+
+```bash
+conda activate cosyvoice && python  cli.py --model-type cosyvoice2 --model-dir pretrained_models/CosyVoice2-0.5B --mode zero_shot --text "心源团队倾力打造心源 AI 平台，致力于为您提供低成本、高效率的人工智能服务体验。我们深度整合全球领先 AI 厂商的顶级大语言模型，让您无需在多个平台间繁琐切换或管理多重订阅，即可便捷调用前沿 AI 能力。" --prompt-audio "/Users/Cyberbolt/Downloads/标准录音 1_3.mp3" --output my_zero_shot.wavconda activate cosyvoice && python  cli.py --model-type cosyvoice2 --model-dir pretrained_models/CosyVoice2-0.5B --mode zero_shot --text "心源团队倾力打造心源 AI 平台，致力于为您提供低成本、高效率的人工智能服务体验。我们深度整合全球领先 AI 厂商的顶级大语言模型，让您无需在多个平台间繁琐切换或管理多重订阅，即可便捷调用前沿 AI 能力。"  --prompt-text="从前，有一个年迈的磨坊主，他把自己的财产分给了三个儿子。大儿子得到了磨坊，二儿子得到了驴子，而最小的儿子只分到了一只猫。小儿子非常失落：“我能拿这只猫做什么呢？养它都要花钱。”
+可是，猫听到了主人的抱怨，忽然站起来说：“别担心。”"  --prompt-audio "/Users/Cyberbolt/Downloads/标准录音 1_3.mp3" --output my_zero_shot.wav
+```
+
+`--output my_zero_shot.wav` 可以改为 `--base64` 来只输出音频文件的 base64
+
+
 [![SVG Banners](https://svg-banners.vercel.app/api?type=origin&text1=CosyVoice🤠&text2=Text-to-Speech%20💖%20Large%20Language%20Model&width=800&height=210)](https://github.com/Akshay090/svg-banners)
 
 ## 👉🏻 CosyVoice 👈🏻
