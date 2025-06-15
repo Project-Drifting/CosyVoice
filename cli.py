@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import os
+# 避免程序打包后，在临时目录生成__pycache__目录 (避免这个错误提示)
+os.environ['PYTHONDONTWRITEBYTECODE'] = '1'  # 等效于 -B
 import sys
 from pathlib import Path
 from typing import Optional

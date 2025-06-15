@@ -8,6 +8,13 @@ conda activate cosyvoice && python  cli.py --model-type cosyvoice2 --model-dir p
 `--output my_zero_shot.wav` 可以改为 `--base64` 来只输出音频文件的 base64
 
 
+## 打包方法
+
+```bash
+python build_cli.py
+```
+
+
 [![SVG Banners](https://svg-banners.vercel.app/api?type=origin&text1=CosyVoice🤠&text2=Text-to-Speech%20💖%20Large%20Language%20Model&width=800&height=210)](https://github.com/Akshay090/svg-banners)
 
 ## 👉🏻 CosyVoice 👈🏻

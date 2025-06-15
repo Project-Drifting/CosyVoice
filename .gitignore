@@ -1,3 +1,8 @@
+dist/
+cosyvoice.spec
+# 不忽略 build_cli.py
+!build_cli.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -27,6 +32,7 @@ __pycache__/
 
 # IPython notebook checkpoints
 .ipynb_checkpoints
+
 
 # macOS dir files
 .DS_Store
