@@ -146,36 +146,43 @@ def main(
   必需参数: --text, --spk-id
   可选参数: --speed, --stream
   说明: 使用预训练说话人进行语音合成
+  支持模型: CosyVoice, CosyVoice2
 
 【zero_shot - 零样本克隆模式】  
   必需参数: --text, --prompt-text, --prompt-audio
   可选参数: --spk-id, --speed, --stream
   说明: 基于参考音频和文本克隆说话人风格
+  支持模型: CosyVoice, CosyVoice2
 
 【cross_lingual - 跨语言模式】
   必需参数: --text, --prompt-audio
   可选参数: --spk-id, --speed, --stream  
   说明: 保持参考音频说话人特征，合成不同语言语音
+  支持模型: CosyVoice-300M (非 Instruct 版本)
 
 【instruct - 指令控制模式】
-  必需参数: --text, --spk-id, --prompt-text
+  必需参数: --text, --spk-id, --instruct-text
   可选参数: --speed, --stream
   说明: 通过文本指令控制合成的语音风格和情感
+  支持模型: CosyVoice-300M-Instruct (不支持 CosyVoice2)
 
 【instruct2 - 指令+零样本模式】
-  必需参数: --text, --prompt-text, --prompt-audio
-  可选参数: --spk-id, --speed, --stream
-  说明: 结合指令控制和零样本克隆
+  必需参数: --text, --prompt-audio
+  可选参数: --spk-id, --prompt-text, --instruct-text, --speed, --stream
+  说明: 结合指令控制和零样本克隆，可使用 --prompt-text 或 --instruct-text
+  支持模型: CosyVoice2
 
 【vc - 语音转换模式】
   必需参数: --source-audio, --prompt-audio
   可选参数: --speed, --stream
   说明: 将源音频转换为参考音频的说话人风格
-  注意: 此模式不需要 --text 参数"""
+  注意: 此模式不需要 --text 参数
+  支持模型: CosyVoice, CosyVoice2"""
     ),
     text: str = typer.Option("", "--text", "-t", help="要合成的文本内容"),
     spk_id: str = typer.Option("", "--spk-id", help="说话人 ID，用于 'sft' 和 'instruct' 模式，例如 '中文女'"),
     prompt_text: str = typer.Option("", "--prompt-text", help="参考文本，用于零样本或指令模式的语音风格控制"),
+    instruct_text: str = typer.Option("", "--instruct-text", help="指令文本，用于 instruct 和 instruct2 模式控制语音风格，末尾会自动添加 '<endofprompt>'"),
     prompt_audio: Optional[Path] = typer.Option(
         None, "--prompt-audio", exists=True, file_okay=True, dir_okay=False, 
         help="参考音频文件路径 (16kHz)，用于零样本、跨语言、指令2或语音转换模式"
@@ -218,12 +225,12 @@ def main(
        示例: --mode cross_lingual --text "Hello world" --prompt-audio chinese_ref.wav
     
     🎯 instruct 模式 (指令控制)
-       必需: --text, --spk-id, --prompt-text
-       示例: --mode instruct --text "你好世界" --spk-id "中文女" --prompt-text "请用开心的语气说话"
+       必需: --text, --spk-id, --instruct-text
+       示例: --mode instruct --text "你好世界" --spk-id "中文女" --instruct-text "请用开心的语气说话"
     
     🎯 instruct2 模式 (指令+零样本)
-       必需: --text, --prompt-text, --prompt-audio
-       示例: --mode instruct2 --text "你好世界" --prompt-text "请用温柔的语气" --prompt-audio ref.wav
+       必需: --text, --prompt-audio
+       示例: --mode instruct2 --text "你好世界" --prompt-audio ref.wav
     
     🎯 vc 模式 (语音转换)
        必需: --source-audio, --prompt-audio
@@ -291,15 +298,28 @@ def main(
             typer.secho(f"错误: cross_lingual 模式需要提供 --text 和 --prompt-audio 参数", fg=typer.colors.RED)
             typer.secho("示例: --mode cross_lingual --text 'Hello world' --prompt-audio chinese_ref.wav", fg=typer.colors.YELLOW)
             raise typer.Exit(code=1)
+        # 检查模型兼容性：instruct 模型不支持 cross_lingual 模式
+        if hasattr(cosy, 'instruct') and cosy.instruct is True:
+            typer.secho(f"错误: 跨语言模式不支持 instruct 类型的模型，请使用 CosyVoice-300M 模型", fg=typer.colors.RED)
+            raise typer.Exit(code=1)
     elif mode == "instruct":
-        if not text or not spk_id or not prompt_text:
-            typer.secho(f"错误: instruct 模式需要提供 --text, --spk-id 和 --prompt-text 参数", fg=typer.colors.RED)
-            typer.secho("示例: --mode instruct --text '你好世界' --spk-id '中文女' --prompt-text '请用开心的语气说话'", fg=typer.colors.YELLOW)
+        if not text or not spk_id or not instruct_text:
+            typer.secho(f"错误: instruct 模式需要提供 --text, --spk-id 和 --instruct-text 参数", fg=typer.colors.RED)
+            typer.secho("示例: --mode instruct --text '你好世界' --spk-id '中文女' --instruct-text '请用开心的语气说话'", fg=typer.colors.YELLOW)
+            raise typer.Exit(code=1)
+        # 检查模型兼容性：只有 instruct 模型支持 instruct 模式
+        if hasattr(cosy, 'instruct') and cosy.instruct is False:
+            typer.secho(f"错误: instruct 模式需要使用 CosyVoice-300M-Instruct 模型", fg=typer.colors.RED)
+            raise typer.Exit(code=1)
+        # CosyVoice2 不支持 instruct 模式
+        if model_type == "cosyvoice2":
+            typer.secho(f"错误: CosyVoice2 模型不支持 instruct 模式，请使用 CosyVoice-300M-Instruct 模型", fg=typer.colors.RED)
             raise typer.Exit(code=1)
     elif mode == "instruct2":
-        if not text or not prompt_text or prompt_speech is None:
-            typer.secho(f"错误: instruct2 模式需要提供 --text, --prompt-text 和 --prompt-audio 参数", fg=typer.colors.RED)
-            typer.secho("示例: --mode instruct2 --text '你好世界' --prompt-text '请用温柔的语气' --prompt-audio ref.wav", fg=typer.colors.YELLOW)
+        if not text or prompt_speech is None or (not instruct_text and not prompt_text):
+            typer.secho(f"错误: instruct2 模式需要提供 --text, --prompt-audio 和 (--instruct-text 或 --prompt-text) 参数", fg=typer.colors.RED)
+            typer.secho("示例1: --mode instruct2 --text '你好世界' --instruct-text '请用温柔的语气' --prompt-audio ref.wav", fg=typer.colors.YELLOW)
+            typer.secho("示例2: --mode instruct2 --text '你好世界' --prompt-text '参考文本' --prompt-audio ref.wav", fg=typer.colors.YELLOW)
             raise typer.Exit(code=1)
     elif mode == "vc":
         if source_speech is None or prompt_speech is None:
@@ -320,10 +340,12 @@ def main(
         generator = cosy.inference_cross_lingual(text, prompt_speech, spk_id, stream=stream, speed=speed, text_frontend=text_frontend)
     elif mode == "instruct":
         # 指令模式：通过文本指令控制合成的语音风格和情感
-        generator = cosy.inference_instruct(text, spk_id, prompt_text, stream=stream, speed=speed, text_frontend=text_frontend)
+        generator = cosy.inference_instruct(text, spk_id, instruct_text, stream=stream, speed=speed, text_frontend=text_frontend)
     elif mode == "instruct2":
         # 指令+零样本模式：结合指令控制和零样本克隆
-        generator = cosy.inference_instruct2(text, prompt_text, prompt_speech, spk_id, stream=stream, speed=speed, text_frontend=text_frontend)
+        # 优先使用 instruct_text，如果没有则使用 prompt_text
+        instruction_text = instruct_text if instruct_text else prompt_text
+        generator = cosy.inference_instruct2(text, instruction_text, prompt_speech, spk_id, stream=stream, speed=speed, text_frontend=text_frontend)
     elif mode == "vc":
         # 语音转换模式：将源音频转换为参考音频的说话人风格
         generator = cosy.inference_vc(source_speech, prompt_speech, stream=stream, speed=speed)
