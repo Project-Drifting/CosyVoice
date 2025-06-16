@@ -1,5 +1,7 @@
 dist/
 cosyvoice.spec
+*.mp3
+
 # 不忽略 build_cli.py
 !build_cli.py
 
